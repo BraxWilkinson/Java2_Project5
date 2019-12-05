@@ -10,6 +10,7 @@ import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -24,13 +25,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
 public class JavaFX_Proj5 extends Application {
 	private static ArrayList<String> mesonet = new ArrayList<String>();	// Mesonet.txt ArrayList
 	private Integer yesCounter;
 	private ComboBox<String> dropbox;
-	private TextField stidTextField;
+	private TextArea stidTextField;
 	
 	@Override
 	public void start(Stage applicationStage) {
@@ -61,7 +63,8 @@ public class JavaFX_Proj5 extends Application {
         // Set a change listener for the slider
         slider.valueProperty().addListener(new ChangeListener<Number>() { 
         	// Method is automatically called when the slider is changed
-        	public void changed(ObservableValue <? extends Number> observable, Number oldValue, Number newValue) 
+        	@Override
+			public void changed(ObservableValue <? extends Number> observable, Number oldValue, Number newValue) 
         		{ 
         			HDfield.setText(newValue.toString()); 
         		} 
@@ -75,31 +78,26 @@ public class JavaFX_Proj5 extends Application {
         // Set an event handler to handle button presses
         stidButton.setOnAction(new EventHandler<ActionEvent>() {
            // Method is automatically called when the button is pressed
-           public void handle(ActionEvent event) {
-              int hammDist = (int)slider.getValue();
-              String mesoSet = calcHammingDist(hammDist, dropbox.getValue());
-              stidTextField.setText(mesoSet);
-              /*
-              String dropStid = dropbox.getValue().toString();
-              String mesoCount = "";
-              int hamm;
-              for (int i=0; i<mesonet.size(); i++) {
-       		   hamm = calcHammingDist(dropStid, mesonet.get(i));
-       		   if (hamm == slider.getValue()) {
-       			   mesoCount += (mesonet.get(i) + "\n");
-       		   }
-       	   }
-       	   stidTextField.setText(mesoCount);*/
+           @Override
+		public void handle(ActionEvent event) {
+        	   int sliderDist = (int)slider.getValue();
+        	   String items = "";
+        	   for (int i=0; i<mesonet.size(); i++) {
+        		   int calcDist = calcHammingDist(mesonet.get(i), dropbox.getValue());
+        		   if (sliderDist==calcDist) {
+        			   items += mesonet.get(i) + "\n";
+        		   }
+        	   }
+        	   stidTextField.setText(items);
            }
         });
         
         // Create show station text field
-        stidTextField = new TextField();
+        stidTextField = new TextArea();
         stidTextField.setPrefWidth(175);
         stidTextField.setPrefHeight(275);
         stidTextField.setEditable(false);
         stidTextField.relocate(10, 110);
-        stidTextField.setAlignment(Pos.TOP_LEFT);
         pane.getChildren().add(stidTextField);
 		
 		// Create a combo box label
@@ -112,6 +110,29 @@ public class JavaFX_Proj5 extends Application {
         pane.getChildren().add(dropboxLabel);
         pane.getChildren().add(dropbox);
         
+     // Create labels and display boxes for calculate button
+        for (int i=0; i<5; i++) {
+        	Label calcLabel = new Label("Distance " + (i));
+        	calcLabel.relocate(20, 503 + 40*i);
+        	pane.getChildren().add(calcLabel);
+        }
+        
+    	TextField calcField0 = new TextField();
+    	calcField0.relocate(100, 500);
+    	pane.getChildren().add(calcField0);
+    	TextField calcField1 = new TextField();
+    	calcField1.relocate(100, 540);
+    	pane.getChildren().add(calcField1);
+    	TextField calcField2 = new TextField();
+    	calcField2.relocate(100, 580);
+    	pane.getChildren().add(calcField2);
+    	TextField calcField3 = new TextField();
+    	calcField3.relocate(100, 620);
+    	pane.getChildren().add(calcField3);
+    	TextField calcField4 = new TextField();
+    	calcField4.relocate(100, 660);
+    	pane.getChildren().add(calcField4);
+        
         // Create calculate HD button
         Button calcButton = new Button("Calculate HD");
         calcButton.relocate(10, 450);
@@ -121,20 +142,20 @@ public class JavaFX_Proj5 extends Application {
         calcButton.setOnAction(new EventHandler<ActionEvent>() {
            /* Method is automatically called when an event 
               occurs (e.g, button is pressed) */
-           public void handle(ActionEvent event) {
-        	   
+           @Override
+		public void handle(ActionEvent event) {
+        	   int hammDist0 = calcHammingDist(0, dropbox.getValue()).size();
+        	   calcField0.setText("" + hammDist0);
+        	   int hammDist1 = calcHammingDist(1, dropbox.getValue()).size();
+        	   calcField1.setText("" + hammDist1);
+        	   int hammDist2 = calcHammingDist(2, dropbox.getValue()).size();
+        	   calcField2.setText("" + hammDist2);
+        	   int hammDist3 = calcHammingDist(3, dropbox.getValue()).size();
+        	   calcField3.setText("" + hammDist3);
+        	   int hammDist4 = calcHammingDist(4, dropbox.getValue()).size();
+        	   calcField4.setText("" + hammDist4);
            }
         });
-        
-        // Create labels and display boxes for calculate button
-        for (int i=0; i<5; i++) {
-        	Label calcLabel = new Label("Distance " + (i));
-        	TextField calcField = new TextField();
-        	calcLabel.relocate(20, 503 + 40*i);
-        	calcField.relocate(100, 500 + 40*i);
-        	pane.getChildren().add(calcLabel);
-        	pane.getChildren().add(calcField);
-        }
         
         // Create add station button
         Button addStationButton = new Button("Add Station");
@@ -149,11 +170,13 @@ public class JavaFX_Proj5 extends Application {
         addStationButton.setOnAction(new EventHandler<ActionEvent>() {
            /* Method is automatically called when an event 
               occurs (e.g, button is pressed) */
-           public void handle(ActionEvent event) {
+           @Override
+		public void handle(ActionEvent event) {
         	   String stationToAdd = addStationField.getText();
         	   for (int i=0; i< mesonet.size(); i++) {
         		   if (stationToAdd.equalsIgnoreCase(mesonet.get(i))) {
-        			   Alert alert = new Alert(AlertType.ERROR,"Station already in file");
+        			   @SuppressWarnings("unused")
+					Alert alert = new Alert(AlertType.ERROR,"Station already in file");
         		   } else {
                 	   try {
         				BufferedWriter bw = new BufferedWriter(new FileWriter("Mesonet.txt", true));
@@ -187,8 +210,9 @@ public class JavaFX_Proj5 extends Application {
         sayYesButton.setOnAction(new EventHandler<ActionEvent>() {
         	/* Method is automatically called when an event 
 			occurs (e.g, button is pressed) */
-        	public void handle(ActionEvent event) {
-        		yesTextField.setText(Integer.toString(yesCounter++));
+        	@Override
+			public void handle(ActionEvent event) {
+        		yesTextField.setText(Integer.toString(++yesCounter));
         	}
         });
         
@@ -215,25 +239,16 @@ public class JavaFX_Proj5 extends Application {
 		return hammCount;
 	}
 	
-	public static String calcHammingDist(Integer hammDist, String stid) {
+	public static ArrayList<String> calcHammingDist(Integer hammDist, String stid) {
 		int hammCount = 0;
-		String mesoCount = "";
-		String firstCompare;
-		String secondCompare;
+		ArrayList<String> mesoCount = new ArrayList<String>();
 		
-		for (int j=0; j<mesonet.size(); j++) {
-			for (int i=0; i<4; i++) {
-				firstCompare = mesonet.get(j).substring(i, i+1);
-				secondCompare = stid.substring(i,i+1);
-				if (!firstCompare.equalsIgnoreCase(secondCompare)) {
-					hammCount++;
-				}
-			}
+		for (int i=0; i<mesonet.size(); i++) {
+			hammCount = calcHammingDist(mesonet.get(i), stid);
 			if (hammCount == hammDist) {
-				mesoCount += (mesonet.get(j) + "\n");
+				mesoCount.add(mesonet.get(i));
 			}
 		}
-		
 		return mesoCount;
 	}
 	
