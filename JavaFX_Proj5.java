@@ -191,6 +191,7 @@ public class JavaFX_Proj5 extends Application {
             				write.println(stationToAdd);
             				write.close();
             				mesonet.add(stationToAdd);
+            				dropbox.getItems().add(stationToAdd);
             			} catch (IOException e) {
             				System.out.println(e);
             				e.printStackTrace();
