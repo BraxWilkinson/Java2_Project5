@@ -77,8 +77,8 @@ public class JavaFX_Proj5 extends Application {
            @Override
 		public void handle(ActionEvent event) {
         	   if (dropbox.getValue()==null) {
-        		   @SuppressWarnings("unused")
         		   Alert alert = new Alert(AlertType.ERROR,"Please select a station from the dropbox");
+        		   alert.showAndWait();
         	   } else {
         	   int sliderDist = (int)slider.getValue();
         	   String items = "";
@@ -173,25 +173,33 @@ public class JavaFX_Proj5 extends Application {
               occurs (e.g, button is pressed) */
            @Override
 		public void handle(ActionEvent event) {
-        	   String stationToAdd = addStationField.getText();
-        	   for (int i=0; i< mesonet.size(); i++) {
-        		   if (stationToAdd.equalsIgnoreCase(mesonet.get(i))) {
-        			   @SuppressWarnings("unused")
-					Alert alert = new Alert(AlertType.ERROR,"Station already in file");
-        		   } else {
-                	   try {
-        				BufferedWriter bw = new BufferedWriter(new FileWriter("Mesonet.txt", true));
-        				PrintWriter write = new PrintWriter(bw);
-        				write.println(stationToAdd);
-        				write.close();
-        				mesonet.add(stationToAdd);
-        			} catch (IOException e) {
-        				System.out.println(e);
-        				e.printStackTrace();
-        		   }
+        	   if (addStationField.getText().length()==4) {
+        		   String stationToAdd = addStationField.getText().toUpperCase();
+        		   boolean stopBlock = false;
+            	   for (int i=0; i< mesonet.size(); i++) {
+            		   if (stationToAdd.equalsIgnoreCase(mesonet.get(i))) {
+            			   stopBlock = true;
+            			   Alert alert = new Alert(AlertType.ERROR,"Station already in file");
+            			   alert.showAndWait();
+            			   break;
+            		   } 
+            	   }
+            	   if (stopBlock!=true)		
+            		   try {
+            				BufferedWriter bw = new BufferedWriter(new FileWriter("Mesonet.txt", true));
+            				PrintWriter write = new PrintWriter(bw);
+            				write.println(stationToAdd);
+            				write.close();
+            				mesonet.add(stationToAdd);
+            				dropbox.getItems().add(stationToAdd);
+            			} catch (IOException e) {
+            				System.out.println(e);
+            				e.printStackTrace();
+            		   }
+        	   } else {
+        		   Alert alert = new Alert(AlertType.ERROR,"Please enter a valid station");
+    			   alert.showAndWait();
         	   }
-        	   
-			}
            }
         });
         
