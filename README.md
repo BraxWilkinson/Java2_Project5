@@ -13,12 +13,14 @@ private TextArea stidTextField - Text field displaying the output of the "Show S
 ## Methods
 Program start method containing code for the JavaFX GUI
 	 * @param applicationStage
+	 
 public void start(Stage applicationStage)
 
 Takes two station IDs and calculates their Hamming Distance
 	 * @param stid Station ID 1
 	 * @param stid2 Station ID 2
 	 * @return Hamming distance of two Station IDs
+	 
 public static int calcHammingDist(String stid, String stid2)
 
 Takes a station ID and a given Hamming Distance and finds the
@@ -27,15 +29,18 @@ Takes a station ID and a given Hamming Distance and finds the
 	 * @param hammDist Given Hamming Distance
 	 * @param stid Given Station ID
 	 * @return ArrayList of Station IDs matching Hamming Distance
+	 
 public static ArrayList<String> calcHammingDist(Integer hammDist, String stid)
   
   Reads Mesonet.txt and exports the Station IDs to an ArrayList in
 	 * the private field
 	 * @param filename File to read
 	 * @throws IOException Exception thrown
+	 
 public static void read(String filename) throws IOException
 
 Main method, read Mesonet.txt and begin program
 	 * @param args Standard argument
 	 * @throws IOException Exception thrown
+	 
 public static void main(String [] args) throws IOException
