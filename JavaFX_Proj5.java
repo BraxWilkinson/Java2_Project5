@@ -173,6 +173,7 @@ public class JavaFX_Proj5 extends Application {
               occurs (e.g, button is pressed) */
            @Override
 		public void handle(ActionEvent event) {
+        	   // CHeck if the station ID is valid
         	   if (addStationField.getText().length()==4) {
         		   String stationToAdd = addStationField.getText().toUpperCase();
         		   boolean stopBlock = false;
@@ -196,6 +197,7 @@ public class JavaFX_Proj5 extends Application {
             				System.out.println(e);
             				e.printStackTrace();
             			}
+        	   
         	   } else {
         		   Alert alert = new Alert(AlertType.ERROR,"Please enter a valid station");
     			   alert.showAndWait();
