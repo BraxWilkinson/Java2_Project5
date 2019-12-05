@@ -71,7 +71,7 @@ public class JavaFX_Proj5 extends Application {
         stidButton.relocate(10, 80);
         pane.getChildren().add(stidButton);
         
-        // Set an event handler to handle button presses
+        // Set an event handler to handle button presses in Show Station
         stidButton.setOnAction(new EventHandler<ActionEvent>() {
            // Method is automatically called when the button is pressed
            @Override
@@ -139,7 +139,7 @@ public class JavaFX_Proj5 extends Application {
         calcButton.relocate(10, 450);
         pane.getChildren().add(calcButton);
         
-        // Set an event handler to handle button presses
+        // Set an event handler to handle button presses in calcButton
         calcButton.setOnAction(new EventHandler<ActionEvent>() {
            /* Method is automatically called when an event 
               occurs (e.g, button is pressed) */
@@ -167,13 +167,13 @@ public class JavaFX_Proj5 extends Application {
         addStationField.relocate(100, 700);
         pane.getChildren().add(addStationField);
         
-        // Set an event handler to handle button presses
+        // Set an event handler to handle button presses in add station
         addStationButton.setOnAction(new EventHandler<ActionEvent>() {
            /* Method is automatically called when an event 
               occurs (e.g, button is pressed) */
            @Override
 		public void handle(ActionEvent event) {
-        	   // CHeck if the station ID is valid
+        	   // Check if the station ID is valid
         	   if (addStationField.getText().length()==4) {
         		   String stationToAdd = addStationField.getText().toUpperCase();
         		   boolean stopBlock = false;
@@ -197,7 +197,7 @@ public class JavaFX_Proj5 extends Application {
             				System.out.println(e);
             				e.printStackTrace();
             			}
-        	   
+        	   // Display alert if station is invalid
         	   } else {
         		   Alert alert = new Alert(AlertType.ERROR,"Please enter a valid station");
     			   alert.showAndWait();
