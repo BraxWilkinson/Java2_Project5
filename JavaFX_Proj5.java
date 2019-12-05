@@ -24,12 +24,20 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
+/**
+ * @author Braxton Wilkinson
+ * @date 12/5/2019
+ */
 public class JavaFX_Proj5 extends Application {
 	private static ArrayList<String> mesonet = new ArrayList<String>();	// Mesonet.txt ArrayList
 	private Integer yesCounter;
 	private ComboBox<String> dropbox;
 	private TextArea stidTextField;
 	
+	/**
+	 * Program start method containing code for the JavaFX GUI
+	 * @param applicationStage
+	 */
 	@Override
 	public void start(Stage applicationStage) {
 		// Create a pane 
@@ -141,8 +149,7 @@ public class JavaFX_Proj5 extends Application {
         
         // Set an event handler to handle button presses in calcButton
         calcButton.setOnAction(new EventHandler<ActionEvent>() {
-           /* Method is automatically called when an event 
-              occurs (e.g, button is pressed) */
+           // Method is automatically called when the button is pressed
            @Override
 		public void handle(ActionEvent event) {
         	   int hammDist0 = calcHammingDist(0, dropbox.getValue()).size();
@@ -169,8 +176,7 @@ public class JavaFX_Proj5 extends Application {
         
         // Set an event handler to handle button presses in add station
         addStationButton.setOnAction(new EventHandler<ActionEvent>() {
-           /* Method is automatically called when an event 
-              occurs (e.g, button is pressed) */
+           // Method is automatically called when the button is pressed
            @Override
 		public void handle(ActionEvent event) {
         	   // Check if the station ID is valid
@@ -219,8 +225,7 @@ public class JavaFX_Proj5 extends Application {
         
         // Set an event handler to handle button presses
         sayYesButton.setOnAction(new EventHandler<ActionEvent>() {
-        	/* Method is automatically called when an event 
-			occurs (e.g, button is pressed) */
+        	// Method is automatically called when the button is pressed
         	@Override
 			public void handle(ActionEvent event) {
         		yesTextField.setText(Integer.toString(++yesCounter));
@@ -235,6 +240,12 @@ public class JavaFX_Proj5 extends Application {
         applicationStage.show();
 	}
 	
+	/**
+	 * Takes two station IDs and calculates their Hamming Distance
+	 * @param stid Station ID 1
+	 * @param stid2 Station ID 2
+	 * @return Hamming distance of two Station IDs
+	 */
 	public static int calcHammingDist(String stid, String stid2) {
 		int hammCount = 0;
 		String firstCompare;
@@ -250,6 +261,14 @@ public class JavaFX_Proj5 extends Application {
 		return hammCount;
 	}
 	
+	/**
+	 * Takes a station ID and a given Hamming Distance and finds the
+	 * stations in Mesonet with that Hamming Distance and enters them
+	 * into an ArrayList
+	 * @param hammDist Given Hamming Distance
+	 * @param stid Given Station ID
+	 * @return ArrayList of Station IDs matching Hamming Distance
+	 */
 	public static ArrayList<String> calcHammingDist(Integer hammDist, String stid) {
 		int hammCount = 0;
 		ArrayList<String> mesoCount = new ArrayList<String>();
@@ -263,6 +282,12 @@ public class JavaFX_Proj5 extends Application {
 		return mesoCount;
 	}
 	
+	/**
+	 * Reads Mesonet.txt and exports the Station IDs to an ArrayList in
+	 * the private field
+	 * @param filename File to read
+	 * @throws IOException Exception thrown
+	 */
 	public static void read(String filename) throws IOException {
 		BufferedReader rd = new BufferedReader(new FileReader("Mesonet.txt"));
 		String lineRead = rd.readLine();
@@ -276,6 +301,11 @@ public class JavaFX_Proj5 extends Application {
 		rd.close();
 	}
 	
+	/**
+	 * Main method, read Mesonet.txt and begin program
+	 * @param args Standard argument
+	 * @throws IOException Exception thrown
+	 */
 	public static void main(String [] args) throws IOException {
 		read("Mesonet.txt");
 		launch(args); // Launch application
