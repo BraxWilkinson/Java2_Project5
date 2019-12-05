@@ -195,7 +195,7 @@ public class JavaFX_Proj5 extends Application {
             			} catch (IOException e) {
             				System.out.println(e);
             				e.printStackTrace();
-            		   }
+            			}
         	   } else {
         		   Alert alert = new Alert(AlertType.ERROR,"Please enter a valid station");
     			   alert.showAndWait();
