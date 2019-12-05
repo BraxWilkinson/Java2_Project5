@@ -1,6 +1,9 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -19,7 +22,7 @@ import javafx.scene.control.TextField;
 
 public class JavaFX_Proj5 extends Application {
 	private static ArrayList<String> mesonet = new ArrayList<String>();	// Mesonet.txt ArrayList
-	private static int count=0;	// Number of items in the mesonet ArrayList
+	private Integer yesCounter;
 	
 	@Override
 	public void start(Stage applicationStage) {
@@ -101,27 +104,26 @@ public class JavaFX_Proj5 extends Application {
               occurs (e.g, button is pressed) */
            @Override
            public void handle(ActionEvent event) {
-              String userInput; 
-              int hourlyWage;    
-              int yearlySalary;    
-
-              // Get user's wage input and calculate yearly salary
-              userInput = wageField.getText();            
-              hourlyWage = Integer.parseInt(userInput);
-              yearlySalary = hourlyWage * 40 * 50;
-
-              // Display calculated salary
-              salField.setText(Integer.toString(yearlySalary));
+        	   String dropStid = dropbox.getValue().toString();
+        	   int hamm;
+        	   for (int i=0; i<mesonet.size(); i++) {
+        		   hamm = calcHammingDist(dropStid, mesonet.get(i));
+        		   if (hamm == slider.getValue()) {
+        			   stidTextField.setText(mesonet.get(i));
+        		   }
+        	   }
            }
         });
         
         // Create labels and display boxes for calculate button
         for (int i=0; i<5; i++) {
         	Label calcLabel = new Label("Distance " + (i));
-        	calcLabel.relocate(20, 500 + 40*i);
+        	TextField calcField = new TextField();
+        	calcLabel.relocate(20, 503 + 40*i);
+        	calcField.relocate(100, 500 + 40*i);
         	pane.getChildren().add(calcLabel);
+        	pane.getChildren().add(calcField);
         }
-    	TextField calcField = new TextField();
         
         // Create add station button
         Button addStationButton = new Button("Add Station");
@@ -132,6 +134,46 @@ public class JavaFX_Proj5 extends Application {
         addStationField.relocate(100, 700);
         pane.getChildren().add(addStationField);
         
+        // Set an event handler to handle button presses
+        addStationButton.setOnAction(new EventHandler<ActionEvent>() {
+           /* Method is automatically called when an event 
+              occurs (e.g, button is pressed) */
+           @Override
+           public void handle(ActionEvent event) {
+        	   String stationToAdd = addStationField.getText();
+        	   mesonet.add(stationToAdd);
+        	   try {
+				BufferedWriter writer = new BufferedWriter(new FileWriter("Mesonet.txt"));
+				writer.write(stationToAdd);
+			} catch (IOException e) {
+				System.out.println(e);
+				e.printStackTrace();
+			}
+           }
+        });
+        
+     // Create say yes button
+        Button sayYesButton = new Button("Say Yes");
+        sayYesButton.relocate(400, 80);
+        yesCounter = 0;
+        pane.getChildren().add(sayYesButton);
+        
+        TextField yesTextField = new TextField();
+        yesTextField.setEditable(false);
+        yesTextField.relocate(400, 110);
+        yesTextField.setText(Integer.toString(yesCounter));
+        pane.getChildren().add(yesTextField);
+        
+        // Set an event handler to handle button presses
+        sayYesButton.setOnAction(new EventHandler<ActionEvent>() {
+        	/* Method is automatically called when an event 
+			occurs (e.g, button is pressed) */
+        	@Override
+        	public void handle(ActionEvent event) {
+        		yesTextField.setText(Integer.toString(yesCounter++));
+        	}
+        });
+        
         // Create a scene
         Scene scene = new Scene(pane, 625, 740);
         // Set the scene
@@ -140,21 +182,16 @@ public class JavaFX_Proj5 extends Application {
         applicationStage.show();
 	}
 	
-	public static int calcHammingDist(String stid) {
+	public static int calcHammingDist(String stid, String stid2) {
 		int hammCount = 0;
-		char firstCompare;
-		char secondCompare;
-		int index = 0;
-		String mesoStid = "";
+		String firstCompare;
+		String secondCompare;
 		
-		for (index=0; index < count; index++) {
-			mesoStid=mesonet.get(index);
-			for (int j=0; j<4; j++) {
-				firstCompare = stid.charAt(j);
-				secondCompare = mesoStid.charAt(j);
-				if (firstCompare == secondCompare) {
-					hammCount++;
-				}
+		for (int i=0; i<4; i++) {
+			firstCompare = stid.substring(i, i+1);
+			secondCompare = stid2.substring(i,i+1);
+			if (firstCompare.equalsIgnoreCase(secondCompare)) {
+				hammCount++;
 			}
 		}
 		return hammCount;
@@ -167,7 +204,6 @@ public class JavaFX_Proj5 extends Application {
 		while(lineRead != null) 
 		{
 			mesonet.add(lineRead);
-			count++;
 			
 			lineRead = rd.readLine();
 		}
