@@ -3,17 +3,23 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -23,6 +29,8 @@ import javafx.scene.control.TextField;
 public class JavaFX_Proj5 extends Application {
 	private static ArrayList<String> mesonet = new ArrayList<String>();	// Mesonet.txt ArrayList
 	private Integer yesCounter;
+	private ComboBox<String> dropbox;
+	private TextField stidTextField;
 	
 	@Override
 	public void start(Stage applicationStage) {
@@ -34,7 +42,7 @@ public class JavaFX_Proj5 extends Application {
         Label HDlabel = new Label("Enter Hamming Dist:");
         HDlabel.relocate(10, 10);
         pane.getChildren().add(HDlabel);
-        TextField HDfield = new TextField();
+        TextField HDfield = new TextField("1.0");
         HDfield.setEditable(false);
         HDfield.relocate(130, 8);
         pane.getChildren().add(HDfield);
@@ -50,6 +58,15 @@ public class JavaFX_Proj5 extends Application {
         slider.relocate(10, 35);
         pane.getChildren().add(slider);
         
+        // Set a change listener for the slider
+        slider.valueProperty().addListener(new ChangeListener<Number>() { 
+        	// Method is automatically called when the slider is changed
+        	public void changed(ObservableValue <? extends Number> observable, Number oldValue, Number newValue) 
+        		{ 
+        			HDfield.setText(newValue.toString()); 
+        		} 
+        }); 
+        
         // Create show station button
         Button stidButton = new Button("Show Station");
         stidButton.relocate(10, 80);
@@ -57,40 +74,42 @@ public class JavaFX_Proj5 extends Application {
         
         // Set an event handler to handle button presses
         stidButton.setOnAction(new EventHandler<ActionEvent>() {
-           /* Method is automatically called when an event 
-              occurs (e.g, button is pressed) */
-           @Override
+           // Method is automatically called when the button is pressed
            public void handle(ActionEvent event) {
-              String userInput; 
-              int hourlyWage;    
-              int yearlySalary;    
-              
-              // Get user's wage input and calculate yearly salary
-              userInput = wageField.getText();            
-              hourlyWage = Integer.parseInt(userInput);
-              yearlySalary = hourlyWage * 40 * 50;
-              
-              // Display calculated salary
-              salField.setText(Integer.toString(yearlySalary));
+              int hammDist = (int)slider.getValue();
+              String mesoSet = calcHammingDist(hammDist, dropbox.getValue());
+              stidTextField.setText(mesoSet);
+              /*
+              String dropStid = dropbox.getValue().toString();
+              String mesoCount = "";
+              int hamm;
+              for (int i=0; i<mesonet.size(); i++) {
+       		   hamm = calcHammingDist(dropStid, mesonet.get(i));
+       		   if (hamm == slider.getValue()) {
+       			   mesoCount += (mesonet.get(i) + "\n");
+       		   }
+       	   }
+       	   stidTextField.setText(mesoCount);*/
            }
         });
         
         // Create show station text field
-        TextField stidTextField = new TextField();
+        stidTextField = new TextField();
         stidTextField.setPrefWidth(175);
         stidTextField.setPrefHeight(275);
         stidTextField.setEditable(false);
         stidTextField.relocate(10, 110);
+        stidTextField.setAlignment(Pos.TOP_LEFT);
         pane.getChildren().add(stidTextField);
 		
-		// Create a label 
-        Label dropbox_label = new Label("Compare with:");
-        dropbox_label.relocate(10, 403);
-        // Create a combo box
-        ComboBox dropbox = new ComboBox(FXCollections.observableArrayList(mesonet));
+		// Create a combo box label
+        Label dropboxLabel = new Label("Compare with:");
+        dropboxLabel.relocate(10, 403);
+        // Create new combo box
+        dropbox = new ComboBox<String>(FXCollections.observableArrayList(mesonet));
         dropbox.relocate(100, 400);
         // Add dropbox and label to the pane
-        pane.getChildren().add(dropbox_label);
+        pane.getChildren().add(dropboxLabel);
         pane.getChildren().add(dropbox);
         
         // Create calculate HD button
@@ -102,16 +121,8 @@ public class JavaFX_Proj5 extends Application {
         calcButton.setOnAction(new EventHandler<ActionEvent>() {
            /* Method is automatically called when an event 
               occurs (e.g, button is pressed) */
-           @Override
            public void handle(ActionEvent event) {
-        	   String dropStid = dropbox.getValue().toString();
-        	   int hamm;
-        	   for (int i=0; i<mesonet.size(); i++) {
-        		   hamm = calcHammingDist(dropStid, mesonet.get(i));
-        		   if (hamm == slider.getValue()) {
-        			   stidTextField.setText(mesonet.get(i));
-        		   }
-        	   }
+        	   
            }
         });
         
@@ -138,21 +149,29 @@ public class JavaFX_Proj5 extends Application {
         addStationButton.setOnAction(new EventHandler<ActionEvent>() {
            /* Method is automatically called when an event 
               occurs (e.g, button is pressed) */
-           @Override
            public void handle(ActionEvent event) {
         	   String stationToAdd = addStationField.getText();
-        	   mesonet.add(stationToAdd);
-        	   try {
-				BufferedWriter writer = new BufferedWriter(new FileWriter("Mesonet.txt"));
-				writer.write(stationToAdd);
-			} catch (IOException e) {
-				System.out.println(e);
-				e.printStackTrace();
+        	   for (int i=0; i< mesonet.size(); i++) {
+        		   if (stationToAdd.equalsIgnoreCase(mesonet.get(i))) {
+        			   Alert alert = new Alert(AlertType.ERROR,"Station already in file");
+        		   } else {
+                	   try {
+        				BufferedWriter bw = new BufferedWriter(new FileWriter("Mesonet.txt", true));
+        				PrintWriter write = new PrintWriter(bw);
+        				write.println(stationToAdd);
+        				write.close();
+        				mesonet.add(stationToAdd);
+        			} catch (IOException e) {
+        				System.out.println(e);
+        				e.printStackTrace();
+        		   }
+        	   }
+        	   
 			}
            }
         });
         
-     // Create say yes button
+        // Create say yes button
         Button sayYesButton = new Button("Say Yes");
         sayYesButton.relocate(400, 80);
         yesCounter = 0;
@@ -168,7 +187,6 @@ public class JavaFX_Proj5 extends Application {
         sayYesButton.setOnAction(new EventHandler<ActionEvent>() {
         	/* Method is automatically called when an event 
 			occurs (e.g, button is pressed) */
-        	@Override
         	public void handle(ActionEvent event) {
         		yesTextField.setText(Integer.toString(yesCounter++));
         	}
@@ -190,11 +208,33 @@ public class JavaFX_Proj5 extends Application {
 		for (int i=0; i<4; i++) {
 			firstCompare = stid.substring(i, i+1);
 			secondCompare = stid2.substring(i,i+1);
-			if (firstCompare.equalsIgnoreCase(secondCompare)) {
+			if (!firstCompare.equalsIgnoreCase(secondCompare)) {
 				hammCount++;
 			}
 		}
 		return hammCount;
+	}
+	
+	public static String calcHammingDist(Integer hammDist, String stid) {
+		int hammCount = 0;
+		String mesoCount = "";
+		String firstCompare;
+		String secondCompare;
+		
+		for (int j=0; j<mesonet.size(); j++) {
+			for (int i=0; i<4; i++) {
+				firstCompare = mesonet.get(j).substring(i, i+1);
+				secondCompare = stid.substring(i,i+1);
+				if (!firstCompare.equalsIgnoreCase(secondCompare)) {
+					hammCount++;
+				}
+			}
+			if (hammCount == hammDist) {
+				mesoCount += (mesonet.get(j) + "\n");
+			}
+		}
+		
+		return mesoCount;
 	}
 	
 	public static void read(String filename) throws IOException {
