@@ -76,6 +76,10 @@ public class JavaFX_Proj5 extends Application {
            // Method is automatically called when the button is pressed
            @Override
 		public void handle(ActionEvent event) {
+        	   if (dropbox.getValue()==null) {
+        		   @SuppressWarnings("unused")
+        		   Alert alert = new Alert(AlertType.ERROR,"Please select a station from the dropbox");
+        	   } else {
         	   int sliderDist = (int)slider.getValue();
         	   String items = "";
         	   for (int i=0; i<mesonet.size(); i++) {
@@ -85,6 +89,7 @@ public class JavaFX_Proj5 extends Application {
         		   }
         	   }
         	   stidTextField.setText(items);
+           }
            }
         });
         
